@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Ibodulla.official</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { margin: 0; font-family: "Segoe UI", sans-serif; background: #f5f6fa; display: flex; }
+    .sidebar { width: 220px; background: #fff; min-height: 100vh; box-shadow: 2px 0 6px rgba(0,0,0,0.1); padding: 20px 10px; position: fixed; top: 0; left: 0; }
+    .sidebar h2 { text-align: center; font-size: 18px; color: #2e7d32; margin-bottom: 20px; }
+    .menu a { display: block; padding: 12px 15px; margin: 8px 0; text-decoration: none; color: #444; border-radius: 8px; transition: 0.3s; cursor: pointer; }
+    .menu a:hover, .menu a.active { background: #2e7d32; color: #fff; }
+    .submenu a { padding-left: 30px; font-size: 14px; }
+    .content { margin-left: 240px; padding: 20px; flex: 1; }
+    header { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 10px; }
+    header h1 { font-size: 20px; color: #2e7d32; margin: 0; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-top: 20px; }
+    table th, table td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
+    table th { background: #fafafa; font-size: 14px; color: #666; }
+    .btn { padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .btn-add { background: #2e7d32; color: white; }
+    .btn-remove { background: #c62828; color: white; }
+    .choice { display: inline-block; padding: 6px 12px; margin: 0 4px; border-radius: 50px; border: 1px solid #ccc; background: #f1f1f1; cursor: pointer; transition: 0.2s; }
+    .choice.active { background: #2e7d32; color: white; border-color: #2e7d32; }
+    .separator { margin: 0 3px; color: #555; }
+    .input-percent { padding: 6px; border-radius: 6px; border: 1px solid #ccc; width: 80px; text-align: center; }
+    footer { position: fixed; bottom: 0; left: 0; width: 100%; }
+    marquee { background:#1b5e20; color:white; padding:10px; font-size:16px; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <div class="menu">
+      <a class="menuGuruh active">1-guruh (08:00-10:00)</a>
+      <a class="menuGuruh">2-guruh (10:00-12:00)</a>
+      <a class="menuGuruh">3-guruh (14:00-16:00)</a>
+      <a class="menuGuruh">4-guruh (16:00-18:00)</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <header>
+      <h1 id="pageTitle">1-guruh (08:00-10:00) - 📋 Davomat</h1>
+    </header>
+
+    <div id="sectionContent"></div>
+  </div>
+
+  <footer>
+    <marquee behavior="scroll" direction="left" scrollamount="6">
+      <i class="fab fa-instagram" style="color:#e1306c; font-size:20px; margin-right:8px;"></i>
+      education_of_ibodulla ✨
+    </marquee>
+  </footer>
+
+  <script>
+    const groups = [
+      { name: "1-guruh", time: "08:00-10:00", students: ["Humoyun Abdumominov","Abdulatif Anorov","Bahodir Izatullayev","Sino Raximov","Javdat Ziyayev"] },
+      { name: "2-guruh", time: "10:00-12:00", students: ["Samar Axadjanov","Akbarjon Shoyunusov","Shaxriyor Sattarov","Jasur Abdullayev","Azizbek Rustamov"] },
+      { name: "3-guruh", time: "14:00-16:00", students: ["Anvar Rahimov","Shahzod Tursunov","Oydin Ismoilov","Bekzod Karimov","Diyorbek Salimov"] },
+      { name: "4-guruh", time: "16:00-18:00", students: ["Jamshid Nurmatov","Mardonbek Rustamov","Azamat Toirov","Farruxbek Akbarov","Ibrohim Shokirov"] }
+    ];
+
+    let currentGroup = 0;
+
+    function renderSection() {
+      const group = groups[currentGroup];
+      const container = document.getElementById('sectionContent');
+      container.innerHTML = '';
+
+      // Davomat
+      let html = `<h2>📋 Davomat</h2><table><thead><tr><th>#</th><th>Ism Familiya</th><th>Davomat</th></tr></thead><tbody>`;
+      group.students.forEach((s,i)=>{
+        html += `<tr><td>${i+1}</td><td>${s}</td><td><span class='choice' onclick='setMark(this)'>✔</span><span class='separator'>/</span><span class='choice' onclick='setMark(this)'>❌</span></td></tr>`;
+      });
+      html += '</tbody></table>';
+
+      // Coin (demo, default 0)
+      html += `<h2>💰 Coin</h2><table><thead><tr><th>#</th><th>Ism Familiya</th><th>Coins</th><th>Tanlash</th><th>Miqdor</th><th>Amal</th></tr></thead><tbody>`;
+      group.students.forEach((s,i)=>{
+        html += `<tr><td>${i+1}</td><td>${s}</td><td id='coin-${currentGroup}-${i}'>0</td><td><span class='choice' onclick="selectCoin(${currentGroup},${i},'add',this)">+ Coin</span><span class='separator'>/</span><span class='choice' onclick="selectCoin(${currentGroup},${i},'remove',this)">- Coin</span></td><td><input type='number' id='coinInput-${currentGroup}-${i}' class='input-percent' placeholder='soni'></td><td><button class='btn btn-add' onclick='applyCoin(${currentGroup},${i})'>Amalni qo\'llash</button></td></tr>`;
+      });
+      html += '</tbody></table>';
+
+      // Faollik
+      html += `<h2>⭐ Odob-axloq & Faollik</h2><table><thead><tr><th>#</th><th>Ism Familiya</th><th>Odob-axloq</th><th>Faollik</th></tr></thead><tbody>`;
+      group.students.forEach((s,i)=>{
+        html += `<tr><td>${i+1}</td><td>${s}</td><td><span class='choice' onclick='setMark(this)'>✔</span><span class='separator'>/</span><span class='choice' onclick='setMark(this)'>❌</span></td><td><span class='choice' onclick='setMark(this)'>✔</span><span class='separator'>/</span><span class='choice' onclick='setMark(this)'>❌</span></td></tr>`;
+      });
+      html += '</tbody></table>';
+
+      // Uyga vazifalar
+      html += `<h2>📘 Uyga vazifalar (%)</h2><table><thead><tr><th>#</th><th>Ism Familiya</th><th>Uyga vazifalar (%)</th></tr></thead><tbody>`;
+      group.students.forEach((s,i)=>{
+        html += `<tr><td>${i+1}</td><td>${s}</td><td><input type='number' class='input-percent' placeholder='%'></td></tr>`;
+      });
+      html += '</tbody></table>';
+
+      container.innerHTML = html;
+    }
+
+    function setMark(el){ const parent = el.parentNode; parent.querySelectorAll('.choice').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+
+    const coinActions = {};
+    function selectCoin(groupIndex,i,action,el){ coinActions[`${groupIndex}-${i}`]=action; el.parentNode.querySelectorAll('.choice').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+
+    function applyCoin(groupIndex,i){
+      const input = document.getElementById(`coinInput-${groupIndex}-${i}`);
+      let val = parseInt(input.value);
+      if(!val || val<=0){ alert('Iltimos coin miqdorini kiriting!'); return; }
+      let key = `${groupIndex}-${i}`;
+      let coinEl = document.getElementById(`coin-${groupIndex}-${i}`);
+      let curr = parseInt(coinEl.textContent);
+      if(coinActions[key]==='add'){ curr+=val; } else if(coinActions[key]==='remove'){ curr-=val; if(curr<0) curr=0; }
+      coinEl.textContent = curr; input.value='';
+    }
+
+    document.querySelectorAll('.menuGuruh').forEach((el,i)=>{
+      el.onclick = ()=>{
+        currentGroup=i;
+        document.querySelectorAll('.menuGuruh').forEach(a=>a.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('pageTitle').innerText=`${groups[i].name} (${groups[i].time}) - 📋 Davomat`;
+        renderSection();
+      };
+    });
+
+    renderSection();
+  </script>
+</body>
+</html>
